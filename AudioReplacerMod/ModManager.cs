@@ -56,12 +56,16 @@ namespace AudioReplacerMod
             }
         }
 
-        /*
         public override void OnLateUpdate()
         {
             if (Input.GetKeyDown(KeyCode.Keypad0))
-                snowboardSounds.courseClips.Forward = null;
+            {
+                MaterialClipsInfo _materialClipInfo;
+                assetManager.materialClipsDict.TryGetValue(MaterialClip.Course, out _materialClipInfo);
+                ModLogger.Log(assetManager.GetAudioPropertiesAsString(assetManager.GetAudioProperties(MaterialClip.Course, AssetType.Forward)));
+                //if (_materialClipInfo.forwardInfo.isReplaced)
+                  //  gameplaySnowboardSounds.courseClips.Forward = _materialClipInfo.forwardInfo.audioClips[0];
+            }
         }
-        */
     }
 }
