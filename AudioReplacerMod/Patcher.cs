@@ -16,13 +16,25 @@ namespace AudioReplacerMod
         {
             try
             {
-                if (__instance == ModManager.userSession.sc && !ModManager.gameplayRider)
+                ModLogger.Log($"{__instance.gameObject.name} rider show up. Replacing its sounds");
+                ModManager.ReplaceGameplayRiderSounds(__instance.gameObject);
+                /*
+                if (__instance == ModManager.userSession.sc && !ModManager.areGameplayRidersRegistered)
                 {
-                    ModManager.gameplayRider = __instance.gameObject;
-                    ModLogger.Log("GameplayRider found");
+                    ModManager.gameplayRider.Add(__instance.gameObject);
+                    
+                    for (int i = 0; i < 32; i++)
+                    {
+                        GameObject rider = ModManager.FindInActiveObjectByName("Snowboarder2_" + i);
+                    }
+
+                    ModLogger.Log($"{ModManager.gameplayRider.Count} gameplayRiders found");
                     ModManager.gameplaySnowboardSounds = __instance.gameObject.GetComponent<Lirp.SnowboardSounds>();
                     ModLogger.Log("SnowboardSounds found");
+                    ModManager.areGameplayRidersRegistered = true;
+                    ModManager.ReplaceGameplayRidersSounds();
                 }
+                */
             }
             catch (System.Exception ex)
             {

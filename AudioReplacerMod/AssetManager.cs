@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using UnhollowerRuntimeLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,7 +33,7 @@ public enum AssetType
 
 public struct AudioProperties
 {
-    public AudioClip[] audioClips;
+    public List<AudioClip> audioClips;
     public bool isReplaced;
     public float volumeMin;
     public float volumeMax;
@@ -55,8 +56,8 @@ namespace AudioReplacerMod
     class AssetManager
     {
         private GameObject _audioReplacerDataObject;
-        private GameObject _materialParent;
         public Dictionary<MaterialClip, MaterialClipsInfo> materialClipsDict = new Dictionary<MaterialClip, MaterialClipsInfo>();
+        public GameObject instantiatedDataObject;
 
         public void Init()
         {
@@ -77,19 +78,27 @@ namespace AudioReplacerMod
             if (modDataBundle)
             {
                 ModLogger.Log($"{files[0].Name} data file loaded");
+
                 var audioReplacerDataObject = modDataBundle.LoadAsset("AudioReplacerData");
                 _audioReplacerDataObject = audioReplacerDataObject.Cast<GameObject>();
+
                 ModLogger.Log($"AudioReplacerDataObject loaded. Object has name: {_audioReplacerDataObject.name}");
-                ModLogger.Log("Populating material clips dictionnary.");
-                PopulateMaterialClipsDictionnary();
-                ModLogger.Log($"Material clips dictionnary populated with {materialClipsDict.Keys.Count} elements.");
             }
             else
                 ModLogger.Log("Can't load data file");
         }
 
+        public void SetupData()
+        {
+            instantiatedDataObject = GameObject.Instantiate(_audioReplacerDataObject);
+            UnityEngine.Object.DontDestroyOnLoad(instantiatedDataObject);
+
+            PopulateMaterialClipsDictionnary();
+        }
+
         public void PopulateMaterialClipsDictionnary()
         {
+            ModLogger.Log("Populating material clips dictionnary.");
             for (int i = 0; i < Enum.GetNames(typeof(MaterialClip)).Length; i++) //Checking assets for each material
             {
                 MaterialClip _currentMaterial = (MaterialClip)i;
@@ -98,7 +107,7 @@ namespace AudioReplacerMod
 
                 ModLogger.Log("Finding object for material " + _currentMaterialName);
 
-                Transform _transform = _audioReplacerDataObject.transform.FindChild(_currentMaterialName + "_Parent");
+                Transform _transform = instantiatedDataObject.transform.FindChild(_currentMaterialName + "_Parent");
 
                 if (_transform)
                 {
@@ -124,9 +133,16 @@ namespace AudioReplacerMod
                             {
                                 ModLogger.Log($"TextAsset found.");
                                 AudioProperties _audioProperties = ParseTextAsset(_textAsset);
+
+                                AudioSource[] _audioSources = _assetObject.GetComponents<AudioSource>();
+                                ModLogger.Log($"{_audioSources.Length} AudioSources found on gameObject {_assetObject.name}");
+                                _audioProperties.audioClips = new List<AudioClip>();
+                                foreach (AudioSource _audioSource in _audioSources)
+                                    _audioProperties.audioClips.Add(_audioSource.clip);
+
                                 _materialClipsInfo.assetPropertiesDict.Add((AssetType)j, _audioProperties); //Adding assets properties to the material information dictionnary
                                 ModLogger.Log($"Properties found for asset type {(AssetType)j} with properties:\n" +
-                                    $"audioClips = {_audioProperties.audioClips}\n" +
+                                    $"audioClips = {_audioProperties.audioClips.Count}\n" +
                                     $"isReplaced = {_audioProperties.isReplaced}\n" +
                                     $"volumeMin = {_audioProperties.volumeMin}\n" +
                                     $"volumeMax = {_audioProperties.volumeMax}\n" +
@@ -160,6 +176,7 @@ namespace AudioReplacerMod
                 else
                     ModLogger.Log($"Parent object for {(MaterialClip)i} not found.");
             }
+            ModLogger.Log($"Material clips dictionnary populated with {materialClipsDict.Keys.Count} elements.");
         }
 
         public AudioProperties ParseTextAsset(Text in_textAsset)
@@ -195,7 +212,7 @@ namespace AudioReplacerMod
         {
 
             return $"Properties:\n" +
-                   $"audioClips = {audioProperties.audioClips}\n" +
+                   $"audioClips = {audioProperties.audioClips[0].name}\n" +
                    $"isReplaced = {audioProperties.isReplaced}\n" +
                    $"volumeMin = {audioProperties.volumeMin}\n" +
                    $"volumeMax = {audioProperties.volumeMax}\n" +
@@ -206,10 +223,24 @@ namespace AudioReplacerMod
         public AudioProperties GetAudioProperties(MaterialClip in_materialClip, AssetType in_assetType)
         {
             MaterialClipsInfo _materialClipInfo;
-            materialClipsDict.TryGetValue(in_materialClip, out _materialClipInfo);
-
             AudioProperties _audioProperties;
-            _materialClipInfo.assetPropertiesDict.TryGetValue(in_assetType, out _audioProperties);
+
+            ModLogger.Log($"Trying to get properties for material {in_materialClip} and asset type {in_assetType}");
+
+            if (materialClipsDict.TryGetValue(in_materialClip, out _materialClipInfo))
+            {
+                ModLogger.Log($"MaterialClipInfo for material {in_materialClip} found");
+                if (_materialClipInfo.assetPropertiesDict.TryGetValue(in_assetType, out _audioProperties))
+                {
+                    ModLogger.Log($"Properties for asset {in_assetType} found");
+                    return _audioProperties;
+                }
+                else ModLogger.Log($"Properties for asset {in_assetType} not found");
+            }
+            else ModLogger.Log($"MaterialClipInfo for material {in_materialClip} not found");
+
+            _audioProperties = new AudioProperties();
+            _audioProperties.isReplaced = false;
 
             return _audioProperties;    
         }
