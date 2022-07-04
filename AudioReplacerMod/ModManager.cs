@@ -73,7 +73,7 @@ namespace AudioReplacerMod
                 ModLogger.Log(assetManager.GetAudioProperties(MaterialClip.Course, AssetType.Forward).audioClips[0].name);
         }
 
-        public static void ReplaceGameplayRiderSounds(GameObject in_rider)
+        public static void ReplaceRiderSounds(GameObject in_rider)
         {
             /*
             ModLogger.Log($"Replacing sounds for {gameplayRider.Count} riders");
@@ -119,11 +119,6 @@ namespace AudioReplacerMod
             else ModLogger.Log("Sound component not found");
         }
 
-        public static void ReplaceReplayRiderSounds()
-        {
-
-        }
-
         public static void ReplaceAudioMaterialData(SnowboardSounds.MaterialClips materialClips, MaterialClip materialClip)
         {
             AudioProperties _audioProperties;
@@ -133,10 +128,10 @@ namespace AudioReplacerMod
             {
                 ModLogger.Log("Replacing properties...");
                 materialClips.Forward = _audioProperties.audioClips[0];
-                materialClips.forwardMinVolume = _audioProperties.volumeMin;
-                materialClips.ForwardVolume = _audioProperties.volumeMax;
-                materialClips.minForwardPitch = _audioProperties.pitchMin;
-                materialClips.ForwardPitch = _audioProperties.pitchMax;
+                materialClips.forwardMinVolume = _audioProperties.volumeBase;
+                materialClips.ForwardVolume = _audioProperties.volumeVar;
+                materialClips.minForwardPitch = _audioProperties.pitchBase;
+                materialClips.ForwardPitch = _audioProperties.pitchVar;
                 ModLogger.Log("Properties replaced!");
             }
             else ModLogger.Log("Not replacing properties for this asset type");
@@ -146,9 +141,9 @@ namespace AudioReplacerMod
             {
                 ModLogger.Log("Replacing properties...");
                 materialClips.Turn = _audioProperties.audioClips[0];
-                materialClips.TurnVolume = _audioProperties.volumeMax;
-                materialClips.minTurnPitch = _audioProperties.pitchMin;
-                materialClips.TurnPitch = _audioProperties.pitchMax;
+                materialClips.TurnVolume = _audioProperties.volumeVar;
+                materialClips.minTurnPitch = _audioProperties.pitchBase;
+                materialClips.TurnPitch = _audioProperties.pitchVar;
                 ModLogger.Log("Properties replaced!");
             }
             else ModLogger.Log("Not replacing properties for this asset type");
@@ -157,12 +152,15 @@ namespace AudioReplacerMod
             if (_audioProperties.isReplaced)
             {
                 ModLogger.Log("Replacing properties...");
-                List<SnowboardSounds.AudioClipSettings> landingSettings = materialClips.LandClipsHard.ToList(); 
-                for (int i = 0; i < landingSettings.Count; i++)
+                List<SnowboardSounds.AudioClipSettings> landingSettings = new List<SnowboardSounds.AudioClipSettings>();
+                for (int i = 0; i < _audioProperties.audioClips.Count; i++)
                 {
-                    landingSettings[i].clip = _audioProperties.audioClips[i];
-                    landingSettings[i].volume = _audioProperties.volumeMax;
+                    SnowboardSounds.AudioClipSettings audioClipSettings = new SnowboardSounds.AudioClipSettings();
+                    audioClipSettings.clip = _audioProperties.audioClips[i];
+                    audioClipSettings.volume = _audioProperties.volumeBase;
+                    landingSettings.Add(audioClipSettings);
                 }
+                materialClips.LandClipsHard = landingSettings.ToArray();
                 ModLogger.Log("Properties replaced!");
             }
             else ModLogger.Log("Not replacing properties for this asset type");
@@ -171,12 +169,15 @@ namespace AudioReplacerMod
             if (_audioProperties.isReplaced)
             {
                 ModLogger.Log("Replacing properties...");
-                List<SnowboardSounds.AudioClipSettings> landingSettings = materialClips.LandClipsSoft.ToList();
-                for (int i = 0; i < landingSettings.Count; i++)
+                List<SnowboardSounds.AudioClipSettings> landingSettings = new List<SnowboardSounds.AudioClipSettings>();
+                for (int i = 0; i < _audioProperties.audioClips.Count; i++)
                 {
-                    landingSettings[i].clip = _audioProperties.audioClips[i];
-                    landingSettings[i].volume = _audioProperties.volumeMax;
+                    SnowboardSounds.AudioClipSettings audioClipSettings = new SnowboardSounds.AudioClipSettings();
+                    audioClipSettings.clip = _audioProperties.audioClips[i];
+                    audioClipSettings.volume = _audioProperties.volumeBase;
+                    landingSettings.Add(audioClipSettings);
                 }
+                materialClips.LandClipsSoft = landingSettings.ToArray();
                 ModLogger.Log("Properties replaced!");
             }
             else ModLogger.Log("Not replacing properties for this asset type");

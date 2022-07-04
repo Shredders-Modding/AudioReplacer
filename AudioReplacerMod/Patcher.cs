@@ -17,7 +17,7 @@ namespace AudioReplacerMod
             try
             {
                 ModLogger.Log($"{__instance.gameObject.name} rider show up. Replacing its sounds");
-                ModManager.ReplaceGameplayRiderSounds(__instance.gameObject);
+                ModManager.ReplaceRiderSounds(__instance.gameObject);
                 /*
                 if (__instance == ModManager.userSession.sc && !ModManager.areGameplayRidersRegistered)
                 {

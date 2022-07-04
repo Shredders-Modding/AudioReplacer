@@ -35,10 +35,10 @@ public struct AudioProperties
 {
     public List<AudioClip> audioClips;
     public bool isReplaced;
-    public float volumeMin;
-    public float volumeMax;
-    public float pitchMin;
-    public float pitchMax;
+    public float volumeBase;
+    public float volumeVar;
+    public float pitchBase;
+    public float pitchVar;
 }
 
 public struct MaterialClipsInfo
@@ -144,10 +144,10 @@ namespace AudioReplacerMod
                                 ModLogger.Log($"Properties found for asset type {(AssetType)j} with properties:\n" +
                                     $"audioClips = {_audioProperties.audioClips.Count}\n" +
                                     $"isReplaced = {_audioProperties.isReplaced}\n" +
-                                    $"volumeMin = {_audioProperties.volumeMin}\n" +
-                                    $"volumeMax = {_audioProperties.volumeMax}\n" +
-                                    $"pitchMin = {_audioProperties.pitchMin}\n" +
-                                    $"pitchMax = {_audioProperties.pitchMax}\n");
+                                    $"volumeBase = {_audioProperties.volumeBase}\n" +
+                                    $"volumeVar = {_audioProperties.volumeVar}\n" +
+                                    $"pitchBase = {_audioProperties.pitchBase}\n" +
+                                    $"pitchVar = {_audioProperties.pitchVar}\n");
                             }
                             else ModLogger.Log($"TextAsset not found.");
                         }
@@ -186,16 +186,16 @@ namespace AudioReplacerMod
             string textStr = in_textAsset.text;
 
             _audioInfo.isReplaced = bool.Parse(Regex.Split(Regex.Split(textStr, "<isReplaced>")[1], ";")[0]);
-            _audioInfo.volumeMin = ParseFloatInText(textStr, "<VolumeMin>");
-            _audioInfo.volumeMax = ParseFloatInText(textStr, "<VolumeMax>");
-            _audioInfo.pitchMin = ParseFloatInText(textStr, "<PitchMin>");
-            _audioInfo.pitchMax = ParseFloatInText(textStr, "<PitchMax>");
+            _audioInfo.volumeBase = ParseFloatInText(textStr, "<VolumeBase>");
+            _audioInfo.volumeVar = ParseFloatInText(textStr, "<VolumeVar>");
+            _audioInfo.pitchBase = ParseFloatInText(textStr, "<PitchBase>");
+            _audioInfo.pitchVar = ParseFloatInText(textStr, "<PitchVar>");
 
             ModLogger.Log($"isReplaced = {_audioInfo.isReplaced}");
-            ModLogger.Log($"volumeMin = {_audioInfo.volumeMin}");
-            ModLogger.Log($"isReplaced = {_audioInfo.volumeMax}");
-            ModLogger.Log($"volumeMin = {_audioInfo.pitchMin}");
-            ModLogger.Log($"volumeMin = {_audioInfo.pitchMax}");
+            ModLogger.Log($"volumeBase = {_audioInfo.volumeBase}");
+            ModLogger.Log($"volumeVar = {_audioInfo.volumeVar}");
+            ModLogger.Log($"pitchBase = {_audioInfo.pitchBase}");
+            ModLogger.Log($"pitchVar = {_audioInfo.pitchVar}");
 
             return _audioInfo;
         }
@@ -214,10 +214,10 @@ namespace AudioReplacerMod
             return $"Properties:\n" +
                    $"audioClips = {audioProperties.audioClips[0].name}\n" +
                    $"isReplaced = {audioProperties.isReplaced}\n" +
-                   $"volumeMin = {audioProperties.volumeMin}\n" +
-                   $"volumeMax = {audioProperties.volumeMax}\n" +
-                   $"pitchMin = {audioProperties.pitchMin}\n" +
-                   $"pitchMax = {audioProperties.pitchMax}\n";
+                   $"volumeBase = {audioProperties.volumeBase}\n" +
+                   $"volumeVar = {audioProperties.volumeVar}\n" +
+                   $"pitchBase = {audioProperties.pitchBase}\n" +
+                   $"pitchVar = {audioProperties.pitchVar}\n";
         }
 
         public AudioProperties GetAudioProperties(MaterialClip in_materialClip, AssetType in_assetType)
