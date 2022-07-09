@@ -155,23 +155,6 @@ namespace AudioReplacerMod
                     }
 
                     materialClipsDict.Add(_currentMaterial, _materialClipsInfo); //Adding the material audio information to the material dictionnary
-
-                    /*
-                    GameObject _forwardObject = _materialParent.transform.FindChild("Forward_Properties").gameObject;
-                    if (_forwardObject)
-                    {
-                        Text _textAsset = _forwardObject.GetComponent<Text>();
-                        if (_textAsset)
-                        {
-                            AudioProperties _audioProperties = ParseTextAsset(_textAsset);
-                            _materialClipsInfo.forwardInfo.isReplaced = _audioProperties.isReplaced;
-                            _materialClipsInfo.forwardInfo.volumeMin = _audioProperties.volumeMin;
-                        }
-                    }
-                    GameObject _turnObject = _materialParent.transform.FindChild("Turn_Properties").gameObject;
-                    GameObject _landingHardObject = _materialParent.transform.FindChild("LandingHard_Properties").gameObject;
-                    GameObject _landingSoftObject = _materialParent.transform.FindChild("LandingSoft_Properties").gameObject;
-                    */
                 }
                 else
                     ModLogger.Log($"Parent object for {(MaterialClip)i} not found.");
