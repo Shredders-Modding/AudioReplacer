@@ -17,7 +17,7 @@ namespace AudioReplacerMod
         public static bool isDebugActivated;
         public static ModManager instance;
         private AssetManager assetManager;
-        private static List<GameObject> processedRider = new List<GameObject>();
+        private static List<string> processedRider = new List<string>();
 
         public override void OnApplicationStart()
         {
@@ -39,7 +39,7 @@ namespace AudioReplacerMod
 
         public static void ReplaceRiderSounds(GameObject in_rider)
         {
-            if (processedRider.Contains(in_rider))
+            if (processedRider.Contains(in_rider.name))
             {
                 ModLogger.Log($"Rider {in_rider.name} already processed");
                 return;
@@ -47,7 +47,7 @@ namespace AudioReplacerMod
             else
             {
                 ModLogger.Log($"Replacing sounds for {in_rider.name}");
-                processedRider.Add(in_rider);
+                processedRider.Add(in_rider.name);
                 SnowboardSounds snowboardSounds = in_rider.GetComponent<SnowboardSounds>();
                 if (snowboardSounds)
                 {
@@ -76,8 +76,8 @@ namespace AudioReplacerMod
             {
                 ModLogger.Log("Replacing properties...");
                 materialClips.Forward = _audioProperties.audioClips[0];
-                materialClips.forwardMinVolume = _audioProperties.volumeBase;
-                materialClips.ForwardVolume = _audioProperties.volumeVar;
+                materialClips.forwardMinVolume = _audioProperties.volumeVar;
+                materialClips.ForwardVolume = _audioProperties.volumeBase;
                 materialClips.minForwardPitch = _audioProperties.pitchBase;
                 materialClips.ForwardPitch = _audioProperties.pitchVar;
                 ModLogger.Log("Properties replaced!");
