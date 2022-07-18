@@ -34,9 +34,7 @@ public enum AssetType
 public struct AudioProperties
 {
     public List<AudioClip> audioClips;
-    public bool isReplaced;
-    public float volumeBase;
-    public float volumeVar;
+    public float volume;
     public float pitchBase;
     public float pitchVar;
 }
@@ -132,20 +130,19 @@ namespace AudioReplacerMod
                             if (_textAsset)
                             {
                                 ModLogger.Log($"TextAsset found.");
-                                AudioProperties _audioProperties = ParseTextAsset(_textAsset);
+                                AudioProperties _audioProperties = ParseTextAsset(_textAsset, (AssetType)j);
 
                                 AudioSource[] _audioSources = _assetObject.GetComponents<AudioSource>();
                                 ModLogger.Log($"{_audioSources.Length} AudioSources found on gameObject {_assetObject.name}");
                                 _audioProperties.audioClips = new List<AudioClip>();
                                 foreach (AudioSource _audioSource in _audioSources)
-                                    _audioProperties.audioClips.Add(_audioSource.clip);
+                                    if (_audioSource.clip)
+                                        _audioProperties.audioClips.Add(_audioSource.clip);
 
                                 _materialClipsInfo.assetPropertiesDict.Add((AssetType)j, _audioProperties); //Adding assets properties to the material information dictionnary
                                 ModLogger.Log($"Properties found for asset type {(AssetType)j} with properties:\n" +
                                     $"audioClips = {_audioProperties.audioClips.Count}\n" +
-                                    $"isReplaced = {_audioProperties.isReplaced}\n" +
-                                    $"volumeBase = {_audioProperties.volumeBase}\n" +
-                                    $"volumeVar = {_audioProperties.volumeVar}\n" +
+                                    $"volume = {_audioProperties.volume}\n" +
                                     $"pitchBase = {_audioProperties.pitchBase}\n" +
                                     $"pitchVar = {_audioProperties.pitchVar}\n");
                             }
@@ -162,21 +159,24 @@ namespace AudioReplacerMod
             ModLogger.Log($"Material clips dictionnary populated with {materialClipsDict.Keys.Count} elements.");
         }
 
-        public AudioProperties ParseTextAsset(Text in_textAsset)
+        public AudioProperties ParseTextAsset(Text in_textAsset, AssetType _assetType)
         {
             AudioProperties _audioInfo = new AudioProperties();
 
             string textStr = in_textAsset.text;
 
-            _audioInfo.isReplaced = bool.Parse(Regex.Split(Regex.Split(textStr, "<isReplaced>")[1], ";")[0]);
-            _audioInfo.volumeBase = ParseFloatInText(textStr, "<VolumeBase>");
-            _audioInfo.volumeVar = ParseFloatInText(textStr, "<VolumeVar>");
-            _audioInfo.pitchBase = ParseFloatInText(textStr, "<PitchBase>");
-            _audioInfo.pitchVar = ParseFloatInText(textStr, "<PitchVar>");
+            if (_assetType == AssetType.Forward || _assetType == AssetType.Turn)
+            {
+                _audioInfo.volume = ParseFloatInText(textStr, "<Volume>");
+                _audioInfo.pitchBase = ParseFloatInText(textStr, "<PitchBase>");
+                _audioInfo.pitchVar = ParseFloatInText(textStr, "<PitchVar>");
+            }
+            else
+            {
+                _audioInfo.volume = ParseFloatInText(textStr, "<Volume>");  
+            }
 
-            ModLogger.Log($"isReplaced = {_audioInfo.isReplaced}");
-            ModLogger.Log($"volumeBase = {_audioInfo.volumeBase}");
-            ModLogger.Log($"volumeVar = {_audioInfo.volumeVar}");
+            ModLogger.Log($"volume = {_audioInfo.volume}");
             ModLogger.Log($"pitchBase = {_audioInfo.pitchBase}");
             ModLogger.Log($"pitchVar = {_audioInfo.pitchVar}");
 
@@ -189,18 +189,6 @@ namespace AudioReplacerMod
                 if (Regex.Split(Regex.Split(in_text, in_pattern)[1], ";").Length > 0)
                     return float.Parse(Regex.Split(Regex.Split(in_text, in_pattern)[1], ";")[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
             return -1;
-        }
-
-        public string GetAudioPropertiesAsString(AudioProperties audioProperties)
-        {
-
-            return $"Properties:\n" +
-                   $"audioClips = {audioProperties.audioClips[0].name}\n" +
-                   $"isReplaced = {audioProperties.isReplaced}\n" +
-                   $"volumeBase = {audioProperties.volumeBase}\n" +
-                   $"volumeVar = {audioProperties.volumeVar}\n" +
-                   $"pitchBase = {audioProperties.pitchBase}\n" +
-                   $"pitchVar = {audioProperties.pitchVar}\n";
         }
 
         public AudioProperties GetAudioProperties(MaterialClip in_materialClip, AssetType in_assetType)
@@ -223,7 +211,6 @@ namespace AudioReplacerMod
             else ModLogger.Log($"MaterialClipInfo for material {in_materialClip} not found");
 
             _audioProperties = new AudioProperties();
-            _audioProperties.isReplaced = false;
 
             return _audioProperties;    
         }

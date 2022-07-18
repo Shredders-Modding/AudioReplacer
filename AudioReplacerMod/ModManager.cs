@@ -22,7 +22,7 @@ namespace AudioReplacerMod
         public override void OnApplicationStart()
         {
             instance = this;
-            isDebugActivated = true;
+            isDebugActivated = false;
 
             assetManager = new AssetManager();
             assetManager.Init();
@@ -72,12 +72,12 @@ namespace AudioReplacerMod
             AudioProperties _audioProperties;
 
             _audioProperties = instance.assetManager.GetAudioProperties(materialClip, AssetType.Forward);
-            if (_audioProperties.isReplaced)
+            if (_audioProperties.audioClips.Count > 0)
             {
                 ModLogger.Log("Replacing properties...");
                 materialClips.Forward = _audioProperties.audioClips[0];
-                materialClips.forwardMinVolume = _audioProperties.volumeVar;
-                materialClips.ForwardVolume = _audioProperties.volumeBase;
+                materialClips.forwardMinVolume = _audioProperties.volume;
+                materialClips.ForwardVolume = _audioProperties.volume;
                 materialClips.minForwardPitch = _audioProperties.pitchBase;
                 materialClips.ForwardPitch = _audioProperties.pitchVar;
                 ModLogger.Log("Properties replaced!");
@@ -85,11 +85,11 @@ namespace AudioReplacerMod
             else ModLogger.Log("Not replacing properties for this asset type");
 
             _audioProperties = instance.assetManager.GetAudioProperties(materialClip, AssetType.Turn);
-            if (_audioProperties.isReplaced)
+            if (_audioProperties.audioClips.Count > 0)
             {
                 ModLogger.Log("Replacing properties...");
                 materialClips.Turn = _audioProperties.audioClips[0];
-                materialClips.TurnVolume = _audioProperties.volumeVar;
+                materialClips.TurnVolume = _audioProperties.volume;
                 materialClips.minTurnPitch = _audioProperties.pitchBase;
                 materialClips.TurnPitch = _audioProperties.pitchVar;
                 ModLogger.Log("Properties replaced!");
@@ -97,7 +97,7 @@ namespace AudioReplacerMod
             else ModLogger.Log("Not replacing properties for this asset type");
 
             _audioProperties = instance.assetManager.GetAudioProperties(materialClip, AssetType.LandingHard);
-            if (_audioProperties.isReplaced)
+            if (_audioProperties.audioClips.Count > 0)
             {
                 ModLogger.Log("Replacing properties...");
                 List<SnowboardSounds.AudioClipSettings> landingSettings = new List<SnowboardSounds.AudioClipSettings>();
@@ -105,7 +105,7 @@ namespace AudioReplacerMod
                 {
                     SnowboardSounds.AudioClipSettings audioClipSettings = new SnowboardSounds.AudioClipSettings();
                     audioClipSettings.clip = _audioProperties.audioClips[i];
-                    audioClipSettings.volume = _audioProperties.volumeBase;
+                    audioClipSettings.volume = _audioProperties.volume;
                     landingSettings.Add(audioClipSettings);
                 }
                 materialClips.LandClipsHard = landingSettings.ToArray();
@@ -114,7 +114,7 @@ namespace AudioReplacerMod
             else ModLogger.Log("Not replacing properties for this asset type");
 
             _audioProperties = instance.assetManager.GetAudioProperties(materialClip, AssetType.LandingSoft);
-            if (_audioProperties.isReplaced)
+            if (_audioProperties.audioClips.Count > 0)
             {
                 ModLogger.Log("Replacing properties...");
                 List<SnowboardSounds.AudioClipSettings> landingSettings = new List<SnowboardSounds.AudioClipSettings>();
@@ -122,7 +122,7 @@ namespace AudioReplacerMod
                 {
                     SnowboardSounds.AudioClipSettings audioClipSettings = new SnowboardSounds.AudioClipSettings();
                     audioClipSettings.clip = _audioProperties.audioClips[i];
-                    audioClipSettings.volume = _audioProperties.volumeBase;
+                    audioClipSettings.volume = _audioProperties.volume;
                     landingSettings.Add(audioClipSettings);
                 }
                 materialClips.LandClipsSoft = landingSettings.ToArray();
