@@ -36,5 +36,5 @@ using MelonLoader;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: MelonInfo(typeof(AudioReplacerMod.ModManager), "AudioReplacerMod", "1", "Pamplemousse")]
+[assembly: MelonInfo(typeof(AudioReplacerMod.ModManager), "AudioReplacerMod", "1.1", "Pamplemousse")]
 [assembly: MelonGame("Foampunch", "Shredders")]

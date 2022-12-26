@@ -4,9 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using UnhollowerRuntimeLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -185,9 +183,16 @@ namespace AudioReplacerMod
 
         public float ParseFloatInText(string in_text, string in_pattern)
         {
-            if (Regex.Split(in_text, in_pattern).Length > 1)
-                if (Regex.Split(Regex.Split(in_text, in_pattern)[1], ";").Length > 0)
-                    return float.Parse(Regex.Split(Regex.Split(in_text, in_pattern)[1], ";")[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            string[] splittedText = in_text.Split(new string[] { in_pattern }, StringSplitOptions.None);
+            if (splittedText.Length > 1)
+            {
+                string[] valueSplit = splittedText[1].Split(';');
+                if (valueSplit.Length > 0)
+                {
+                    ModLogger.Log($@"Parsing text asset ""{in_text}"", pattern ""{in_pattern}"", parameter text ""{splittedText[1]}"" and detected text value ""{valueSplit[0]}""");
+                    return float.Parse(valueSplit[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+                }
+            }
             return -1;
         }
 

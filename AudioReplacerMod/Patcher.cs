@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
+using Il2CppLirp;
 
 namespace AudioReplacerMod
 {
-    [HarmonyPatch(typeof(Lirp.SnowboardController), "Show")]
-    class SnowboardControllerPatcher
+    [HarmonyPatch(typeof(SnowboardController), "Show")]
+    internal class SnowboardControllerPatcher
     {
         [HarmonyPostfix]
-        public static void Postfix(System.Reflection.MethodBase __originalMethod, Lirp.SnowboardController __instance)
+        public static void Postfix(System.Reflection.MethodBase __originalMethod, SnowboardController __instance)
         {
             try
             {

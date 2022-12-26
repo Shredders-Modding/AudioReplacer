@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Lirp;
+using Il2CppLirp;
 using MelonLoader;
-using UnhollowerRuntimeLib;
 using UnityEngine;
 
 
@@ -19,7 +18,7 @@ namespace AudioReplacerMod
         private AssetManager assetManager;
         private static List<string> processedRider = new List<string>();
 
-        public override void OnApplicationStart()
+        public override void OnInitializeMelon()
         {
             instance = this;
             isDebugActivated = false;
